@@ -1,0 +1,63 @@
+---
+title: "Problem2"
+author: "Joe Gilbert"
+date: "10/9/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+#importing data
+```{r}
+bostonhousing <- read.delim("bostonhousing.txt")
+```
+
+#building regression model reg
+```{r}
+reg <- lm(MEDV ~ . , data = bostonhousing)
+summary(reg)
+```
+The explanatory variables INDUS and AGE seem least likely to be included in the best model, as their estimated coefficients in this model are not highly significant (they both have high p-values).
+
+#building regression model reg.picked by omitting variables selected above
+```{r}
+reg.picked <- lm(MEDV ~ . - INDUS - AGE , data = bostonhousing)
+summary(reg.picked)
+```
+
+#calculating MSE and MAE
+```{r}
+reg.residuals <- summary(reg)$residuals
+reg.SAE <- sum(abs(reg.residuals))
+reg.MAE <- reg.SAE / (506 - 1 - 13)
+reg.SSE <- sum(reg.residuals^2)
+reg.MSE <- reg.SSE / (506 - 1 - 13)
+picked.residuals <- summary(reg.picked)$residuals
+picked.SAE <- sum(abs(picked.residuals))
+picked.MAE <- picked.SAE / (506 - 1 - 11)
+picked.SSE <- sum(picked.residuals^2)
+picked.MSE <- picked.SSE / (506 - 1 - 11)
+reg.MAE
+reg.MSE
+picked.MAE
+picked.MSE
+```
+The MAE and MSE for the picked model are slightly smaller than their corresponding values for the full model. Thus, I would choose the picked model.
+
+#loading library for piecewise regression
+```{r}
+library(MASS)
+```
+
+#bulding piecewise regression reg.step
+```{r}
+reg.step <- stepAIC(object=reg, direction="both")
+summary(reg.step)
+```
+This model drops AGE and INDUS, just like our picked model from part b. Thus, its estimates are also the same.

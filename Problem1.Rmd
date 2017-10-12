@@ -1,0 +1,53 @@
+---
+title: "Problem1"
+author: "Joe Gilbert"
+date: "10/9/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+#importing data for test
+```{r}
+tensile <- read.delim("Tensile.txt")
+```
+
+#creating my anova function
+```{r}
+myAOV <- function(data, grouplabels) {
+  response <- c(t(as.matrix(data)))
+  k <- ncol(data)
+  n <- nrow(data)
+  predictor <- gl(k,1,n*k,factor(grouplabels))
+  model <- lm(response ~ predictor)
+  Fstat <- summary(model)$fstatistic
+  Ftest <- qf(.95,Fstat[2],Fstat[3])
+  F <- Fstat[1]
+  if (F > Ftest){
+    return(c(F,"Reject null"))
+  } else{
+    return(c(F,"Fail to reject null"))
+  }
+}
+```
+
+
+#comparing my aov function to r built in
+```{r}
+resp <- c(t(as.matrix(tensile)))
+treats <- c("HC5", "HC10", "HC15", "HC20")
+k <- 4
+n <- 6
+tm <- gl(k,1,n*k,factor(treats))
+testANOVA <- aov(resp ~ tm)
+summary(testANOVA)
+mylabels <- c("HC5", "HC10", "HC15", "HC20")
+myAOV(tensile,mylabels)
+```
+

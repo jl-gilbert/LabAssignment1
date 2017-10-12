@@ -1,0 +1,50 @@
+---
+title: "Problem3"
+author: "Joe Gilbert"
+date: "10/9/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+#importing data
+```{r}
+labdata <- read.delim("labdata.txt")
+```
+
+#building regression model reg
+```{r}
+reg3 <- lm(y ~ . , data = labdata)
+summary(reg3)
+```
+
+#plotting each explanatory variable against the response. 
+```{r}
+plot(labdata$x1, labdata$y)
+plot(labdata$x2, labdata$y)
+plot(labdata$x3, labdata$y)
+plot(labdata$x4, labdata$y)
+plot(labdata$x5, labdata$y)
+plot(labdata$x6, labdata$y)
+plot(labdata$x7, labdata$y)
+plot(labdata$x8, labdata$y)
+```
+X1 appears to be most likely to be used in a piecewise regression.
+Printing just that plot below. 
+```{r}
+plot(labdata$x1,labdata$y)
+```
+
+#Building piecewise regression with x1.
+```{r}
+x1mean <- mean(labdata$x1)
+reg.piece <- lm(y ~ (x1 < x1mean)*x1, data=labdata)
+summary(reg.piece)
+```
+The R-squared and Adjusted R-squared both increase, so this model is better than the model in part a.
